@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>js face detect Examples</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .picture-container {
+            position: relative;
+            width: 600px;
+            height: auto;
+            margin: 20px auto;
+            border: 10px solid #fff;
+            box-shadow: 0 5px 5px #000;
+        }
+        .picture {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+            
+        .face {
+            position: absolute;
+            border: 2px solid #FFF;
+        }
+        .center {
+            text-align: center;
+        }
+        button {
+            padding: 10px 30px;
+            background: #f95708;
+            font-size: 16px;
+            color: #010203;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="center"><button class="uploadpic">上传图片</button></div>
+    <input type="file" class="upimg" style="opacity:0;"/>
+    
+    <div class="picture-container">
+        <img id="picture" class="picture" src="images/faces.jpg"/>
+    </div>
+    
+    <div class="center"><button id="try-it">test face-detect</button></div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.facedetection.min.js"></script> 
+    <script>
+        /* global $ */
+        $(function () {
+            /*$('.upimg').change(function(){
+                $('.face').each(function(i,v){
+                    v.remove();
+                })
+              var reader = new FileReader();
+                reader.onload = function(e){
+                    var dataURL=this.result;
+                    $("#picture").attr("src", dataURL);
+                }
+                reader.readAsDataURL(this.files[0]);
+            });*/
+            $('.uploadpic').click(function(){
+                $(".upimg").click();
+            })
+            $(".upimg").change(function(){
+                $('.face').each(function(i,v){
+                    v.remove();
+                })
+                var objUrl = getObjectURL(this.files[0]);
+                if (objUrl) {
+                   $("#picture").attr("src", objUrl);
+                }    
+            });
+             //建立一个可存取到该file的url
+            function getObjectURL(file){
+                var url = null; 
+                if (window.createObjectURL!=undefined) { // basic
+                  url = window.createObjectURL(file);
+                } else if (window.URL!=undefined) { // mozilla(firefox)
+                  url = window.URL.createObjectURL(file);
+                } else if (window.webkitURL!=undefined) { // webkit or chrome
+                  url = window.webkitURL.createObjectURL(file);
+                }
+                return url;
+            } 
+            
+            $('#try-it').click(function (e) {
+                e.preventDefault();
+
+                
+
+                $('#picture').faceDetection({
+                    complete: function (faces) { 
+                        // console.log(faces);                       
+                        for (var i = 0; i < faces.length; i++) {
+                            $('<div>', {
+                                'class':'face',
+                                'css': {
+                                    'position': 'absolute',
+                                    'left':     faces[i].x * faces[i].scaleX + 'px',
+                                    'top':      faces[i].y * faces[i].scaleY + 'px',
+                                    'width':    faces[i].width  * faces[i].scaleX + 'px',
+                                    'height':   faces[i].height * faces[i].scaleY + 'px'
+                                }
+                            })
+                            .insertAfter(this);
+                        }
+                    },
+                    error:function (code, message) {
+                        alert('Error: ' + message);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
